@@ -53,7 +53,6 @@ class BookController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-
     /**
      * @Route("/api/books", name="addBook", methods="POST")
      */

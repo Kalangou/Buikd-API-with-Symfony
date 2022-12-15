@@ -7,8 +7,10 @@ use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class AuthorController extends AbstractController
@@ -25,7 +27,7 @@ class AuthorController extends AbstractController
     }
 
     /**
-     * @Route("api/authors/{id}", name="DetailAuthor", methods="GET")
+     * @Route("api/authors/{id}", name="detailAuthor", methods="GET")
     */
     public function getOneAuthor(Author $author, SerializerInterface $serializer):JsonResponse
     {
@@ -48,4 +50,26 @@ class AuthorController extends AbstractController
         // Retourne 204
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
+
+
+    /**
+     * @Route("/api/authors", name="addAuthor", methods="POST")
+     */
+    public function addAuthor(Request $request, SerializerInterface $serializer, EntityManagerInterface $em,
+                            UrlGeneratorInterface $urlGenerator): JsonResponse
+    {
+        // Deserialise en JSON
+        $author = $serializer->deserialize($request->getContent(), Author::class, 'json');
+        // On enregistre
+        $em->persist($author);
+        // On confirme l'enregistrement
+        $em->flush();
+        // Format JSON
+        $jsonBook   = $serializer->serialize($author, 'json', ['groups' => 'getAuthors']);
+        // Redirection : Location au niveau de header
+        $location = $urlGenerator->generate('detailAuthor', ['id' => $author->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        // Retour OK
+        return new JsonResponse($jsonBook, Response::HTTP_CREATED, ['Location' => $location], true);
+    }
+
 }
