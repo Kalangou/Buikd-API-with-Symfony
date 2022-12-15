@@ -32,6 +32,7 @@ class Book
 
     /**
      * @ORM\ManyToOne(targetEntity=Author::class, inversedBy="books")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      * @Groups({"getBooks"})
      */
     private $author;

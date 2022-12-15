@@ -33,7 +33,7 @@ class Author
     private $firstName;
 
     /**
-     * @ORM\OneToMany(targetEntity=Book::class, mappedBy="author")
+     * @ORM\OneToMany(targetEntity=Book::class, mappedBy="author", cascade={"remove"})
      * @Groups({"getAuthors"})
      */
     private $books;
